@@ -1,10 +1,101 @@
 import getopt
+import itertools
 import math
 import sys
 from decimal import Decimal
 from math import log
 
 __long_ass_digit = '73167176531330624919225119674426574742355349194934'
+
+
+def binomial_coefficient(n, k):
+    return math.factorial(n) / (math.factorial(k) * math.factorial(n - k))
+
+
+def is_abundant(n):
+    return proper_divisors_sum(n) > n
+
+
+def proper_divisors(n):
+    i = 2
+    divisors = [1]
+    while i * i <= n:
+        if not n % i:
+            divisors.append(i)
+            divisors.append(n / i)
+        i += 1
+
+    return divisors
+
+
+def proper_divisors_sum(n):
+    i = 2
+    divisors_sum = 1
+    while i * i <= n:
+        if not n % i:
+            divisors_sum += i + (n / i if math.sqrt(n) != i else 0)
+        i += 1
+    return divisors_sum
+
+
+def max_product_grid(grid, n=4):
+    max_product = 0
+    for j in range(len(grid)):
+        row = grid[j]
+        for i in range(len(row)):
+            if i <= len(row) - n:  # can always do forwards straight
+                product = row[i]
+                for p in range(1, n):
+                    product *= row[i + p]
+                max_product = product if product > max_product else max_product
+                if j <= len(grid) - n:  # can also do forwards diagonal
+                    product = row[i]
+                    for p in range(1, n):
+                        product *= grid[j + p][i + p]
+                    max_product = product if product > max_product else max_product
+            if i >= n - 1 and j <= len(grid) - n:  # can always do backward diagonal
+                product = row[i]
+                for p in range(1, n):
+                    product *= grid[j + p][i - p]
+                max_product = product if product > max_product else max_product
+            if j <= len(grid) - n:  # can do straight down
+                product = row[i]
+                for p in range(1, n):
+                    product *= grid[j + p][i]
+                max_product = product if product > max_product else max_product
+
+    return max_product
+
+
+def is_criss_cross(grid):
+    base_count = 0
+    got_base = False
+    d1_count = d2_count = 0
+    d1_index = 0
+    d2_index = len(grid[0]) - 1
+    for y in range(len(grid)):
+        row_count = 0
+        d1_count += grid[y][d1_index]
+        d1_index += 1
+        d2_count += grid[y][d2_index]
+        d2_index -= 1
+        for x in range(len(grid[y])):
+            if not got_base:
+                base_count += grid[y][x]
+            else:
+                row_count += grid[y][x]
+
+            column_count = 0
+            for c in range(len(grid)):
+                column_count += grid[c][x]
+
+        if got_base:
+            if row_count != base_count or column_count != base_count:
+                return False
+        else:
+            got_base = True
+
+    return d1_count == base_count and d2_count == base_count
 
 
 def summatorial(n):
@@ -186,6 +277,21 @@ def fibo_sum_even(upper=4000000):
     return n
 
 
+def fibo_digit_count(digit_count=1000):
+    x = y = 1
+    i = 1
+    while True:
+        if len(str(x)) >= digit_count:
+            print x
+            return i
+        elif len(str(y)) >= digit_count:
+            print y
+            return i + 1
+
+        x, y = x + y, x + 2 * y
+        i += 2
+
+
 def three_five_multiples(below=1000):
     total = 0
     for i in range(below):
@@ -225,6 +331,14 @@ def process(arg):
             i += 2
 
         print count
+    elif arg == '11':
+        grid = []
+        with open('p11.txt') as f:
+            for l in f.readlines():
+                grid.append([int(x) for x in l.split()])
+
+        print max_product_grid(grid)
+
     elif arg == '12':
         i = 10
         while True:
@@ -250,12 +364,9 @@ def process(arg):
                 seq) < longest else (len(seq), i)
         print (longest, starter)
     elif arg == '15':
-        addition = 0
-        power = str(2 ** 1000)
-        print power
-        for c in power:
-            addition += int(c)
-        print addition
+        print binomial_coefficient(40, 20)
+    elif arg == '16':
+        print sum(int(c) for c in str(2 ** 1000))
     elif arg == '18':
         print max_triangle('p18.txt')
     elif arg == '20':
@@ -264,6 +375,37 @@ def process(arg):
         for c in str(n):
             count += int(c)
         print count
+    elif arg == '21':
+        amicable_dict = {}
+        result = 0
+        for i in range(2, 10000):
+            amicable_dict[i] = proper_divisors_sum(i)
+        for key in amicable_dict.keys():
+            if amicable_dict[key] in amicable_dict and key != amicable_dict[key] and \
+                            amicable_dict[amicable_dict[key]] == key:
+                result += key
+        print result
+    elif arg == '22':
+        names = []
+        with open('p22.txt') as f:
+            for l in f.readlines():
+                names = map(lambda s: s.strip('"'), l.split(','))
+        names.sort()
+        result = 0
+        for i in range(len(names)):
+            name_weight = 0
+            for c in names[i]:
+                name_weight += ord(c) - 64
+            result += name_weight * (i + 1)
+        print result
+    elif arg == '23':
+        abundant = []
+        for i in range(2, 28123):
+            if is_abundant(i):
+                abundant.append(i)
+        print abundant
+    elif arg == '25':
+        print fibo_digit_count()
     elif arg == '67':
         print max_triangle('p67.txt')
     elif arg == '99':
@@ -304,6 +446,17 @@ def process(arg):
             divisible_number_of_rows) * 7 - divisible_number_of_rows  # accounts for the extra 1
         undivisible = entities - divisible_entities
         print undivisible
+    elif arg == '166':
+        a = list(itertools.product(range(10), repeat=4))
+        count = 0
+        for x_0 in range(len(a)):
+            for x_1 in range(len(a)):
+                for x_2 in range(len(a)):
+                    for x_3 in range(len(a)):
+                        if is_criss_cross((a[x_0], a[x_1], a[x_2], a[x_3])):
+                            count += 1
+        print count
+
     else:
         raise ValueError('Not Implemented')
 
@@ -324,9 +477,8 @@ def main():
             sys.exit(0)
 
     # process arguments
-    while True:
-        euler = raw_input("Please enter problem number: ")
-        process(euler.strip())
+    euler = raw_input("Please enter problem number: ")
+    process(euler.strip())
 
 
 if __name__ == '__main__':
