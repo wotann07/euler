@@ -75,6 +75,7 @@ def is_criss_cross(grid):
     d2_index = len(grid[0]) - 1
     for y in range(len(grid)):
         row_count = 0
+        column_count = 0
         d1_count += grid[y][d1_index]
         d1_index += 1
         d2_count += grid[y][d2_index]
@@ -167,11 +168,11 @@ def factor_pairs(n):
 def pythagorean_triplets(n):
     for i in range(2, n / 2, 2):
         for (s, t) in factor_pairs((i ** 2) / 2):
-            print 'factor pair: %s of %d' % ((s, t), i)
+            print('factor pair: %s of %d' % ((s, t), i))
             a = i + s
             b = i + t
             c = i + t + s
-            print (a, b, c)
+            print(a, b, c)
             if (a + b + c) == n:
                 return a * b * c
 
@@ -272,7 +273,7 @@ def fibo_sum_even(upper=4000000):
     while n < upper:
         n += (x + y)
         x, y = x + 2 * y, 2 * x + 3 * y
-        print (x, y)
+        print(x, y)
 
     return n
 
@@ -282,10 +283,10 @@ def fibo_digit_count(digit_count=1000):
     i = 1
     while True:
         if len(str(x)) >= digit_count:
-            print x
+            print(x)
             return i
         elif len(str(y)) >= digit_count:
-            print y
+            print(y)
             return i + 1
 
         x, y = x + y, x + 2 * y
@@ -303,41 +304,41 @@ def three_five_multiples(below=1000):
 
 def process(arg):
     if arg == '1':
-        print three_five_multiples()
+        print(three_five_multiples())
     elif arg == '2':
-        print fibo_sum_even()
+        print(fibo_sum_even())
     elif arg == '3':
-        print largest_prime_factor()
+        print(largest_prime_factor())
     elif arg == '4':
-        print largest_palindrome()
+        print(largest_palindrome())
     elif arg == '5':
         raise ValueError('Do it in your head')
     elif arg == '6':
-        print sum_square_difference()
+        print(sum_square_difference())
     elif arg == '7':
-        print nth_prime()
+        print(nth_prime())
     elif arg == '8':
-        print biggest_adjacent_product()
+        print(biggest_adjacent_product())
     elif arg == '9':
-        print pythagorean_triplets(1000)
+        print(pythagorean_triplets(1000))
     elif arg == '10':
         i = 3
         count = 2
         while i < 2000000:
             if is_prime(i):
-                print i
+                print(i)
                 count += i
 
             i += 2
 
-        print count
+        print(count)
     elif arg == '11':
         grid = []
         with open('p11.txt') as f:
             for l in f.readlines():
                 grid.append([int(x) for x in l.split()])
 
-        print max_product_grid(grid)
+        print(max_product_grid(grid))
 
     elif arg == '12':
         i = 10
@@ -345,7 +346,7 @@ def process(arg):
             value = triangle_number(i)
             divisors = factor_pairs(value)
             if len(divisors) > 250:
-                print value
+                print(value)
                 break
             i += 1
     elif arg == '13':
@@ -354,7 +355,7 @@ def process(arg):
             for l in f.readlines():
                 addition += int(l)
 
-            print str(addition)[:10]
+            print(str(addition)[:10])
     elif arg == '14':
         longest = 0
         starter = 0
@@ -362,19 +363,19 @@ def process(arg):
             seq = collatz_sequence(i)
             (longest, starter) = (longest, starter) if len(
                 seq) < longest else (len(seq), i)
-        print (longest, starter)
+        print(longest, starter)
     elif arg == '15':
-        print binomial_coefficient(40, 20)
+        print(binomial_coefficient(40, 20))
     elif arg == '16':
-        print sum(int(c) for c in str(2 ** 1000))
+        print(sum(int(c) for c in str(2 ** 1000)))
     elif arg == '18':
-        print max_triangle('p18.txt')
+        print(max_triangle('p18.txt'))
     elif arg == '20':
         n = math.factorial(100)
         count = 0
         for c in str(n):
             count += int(c)
-        print count
+        print(count)
     elif arg == '21':
         amicable_dict = {}
         result = 0
@@ -384,7 +385,7 @@ def process(arg):
             if amicable_dict[key] in amicable_dict and key != amicable_dict[key] and \
                             amicable_dict[amicable_dict[key]] == key:
                 result += key
-        print result
+        print(result)
     elif arg == '22':
         names = []
         with open('p22.txt') as f:
@@ -397,55 +398,55 @@ def process(arg):
             for c in names[i]:
                 name_weight += ord(c) - 64
             result += name_weight * (i + 1)
-        print result
+        print(result)
     elif arg == '23':
         abundant = []
         for i in range(2, 28123):
             if is_abundant(i):
                 abundant.append(i)
-        print abundant
+        print(abundant)
     elif arg == '25':
-        print fibo_digit_count()
+        print(fibo_digit_count())
     elif arg == '67':
-        print max_triangle('p67.txt')
+        print(max_triangle('p67.txt'))
     elif arg == '99':
         data = []
         with open('p99.txt') as f:
-            data = map(lambda s: (int(s[0]), int(s[1])), map(lambda line: line.split(','), f.readlines()))
-        print max(range(len(data)), key=lambda p: data[p][1] * log(data[p][0])) + 1
+            data = list(map(lambda s: (int(s[0]), int(s[1])), map(lambda line: line.split(','), f.readlines())))
+        print(max(range(len(data)), key=lambda p: data[p][1] * log(data[p][0])) + 1)
     elif arg == '100':
         n = 10 ** 12 - 1
         while True:
             (x, y) = solve_quadratic(1, -1, -(n * (n - 1) / 2))
-            print (x.real, n, y.real, x, y)
+            print(x.real, n, y.real, x, y)
             if is_whole_integer(x):
                 break
             elif is_whole_integer(y):
                 break
             n = n + 1
 
-        print (x, y)
+        print(x, y)
     elif arg == '148':
         c = 0
-        print pascal_row(2)
+        print(pascal_row(2))
         for i in range(1, 21):
             row = pascal_row(i)
-            print row
+            print(row)
             for j in row:
                 if not 0 == j % 7:
                     c += 1
-        print c
+        print(c)
         # total of numbers in 10^9
         n = 14
         entities = summatorial(n)
-        print entities
+        print(entities)
         # rows that are divisible are the sum of the entities on rows multiple of 7 minus 2 * number of rows
         divisible_number_of_rows = (n - n % 7) / 7
-        print divisible_number_of_rows
+        print(divisible_number_of_rows)
         divisible_entities = summatorial(
             divisible_number_of_rows) * 7 - divisible_number_of_rows  # accounts for the extra 1
         undivisible = entities - divisible_entities
-        print undivisible
+        print(undivisible)
     elif arg == '166':
         a = list(itertools.product(range(10), repeat=4))
         count = 0
@@ -455,7 +456,7 @@ def process(arg):
                     for x_3 in range(len(a)):
                         if is_criss_cross((a[x_0], a[x_1], a[x_2], a[x_3])):
                             count += 1
-        print count
+        print(count)
 
     else:
         raise ValueError('Not Implemented')
@@ -465,19 +466,19 @@ def main():
     # parse command line options
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'h', ['help'])
-    except getopt.error, msg:
-        print msg
-        print 'for help use --help'
+    except getopt.error as msg:
+        print(msg)
+        print('for help use --help')
         sys.exit(2)
 
     # process options
     for o in opts:
         if o in ('-h', '--help'):
-            print __doc__
+            print(__doc__)
             sys.exit(0)
 
     # process arguments
-    euler = raw_input("Please enter problem number: ")
+    euler = input("Please enter problem number: ")
     process(euler.strip())
 
 
