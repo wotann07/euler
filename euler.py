@@ -8,6 +8,128 @@ from math import log
 __long_ass_digit = '73167176531330624919225119674426574742355349194934'
 
 
+def get_dijkstra_shortest_path(weighted_graph, start, end):
+    """
+    Calculate the shortest path for a directed weighted graph.
+
+    Node can be virtually any hashable datatype.
+
+    :param start: starting node
+    :param end: ending node
+    :param weighted_graph: {"node1": {"node2": "weight", ...}, ...}
+    :return: ["START", ... nodes between ..., "END"] or None, if there is no
+             path
+    """
+
+    # We always need to visit the start
+    nodes_to_visit = {start}
+    visited_nodes = set()
+    # Distance from start to start is 0
+    distance_from_start = {start: 0}
+    tentative_parents = {}
+
+    while nodes_to_visit:
+        # The next node should be the one with the smallest weight
+        current = min([(distance_from_start[node], node) for node in nodes_to_visit])[
+            1]  # [1] indicates we are taking the weight
+
+        # The end was reached
+        if current == end:
+            break
+
+        nodes_to_visit.discard(current)
+        visited_nodes.add(current)
+
+        edges = weighted_graph[current]
+        unvisited_neighbours = set(edges).difference(visited_nodes)
+        for neighbour in unvisited_neighbours:
+            neighbour_distance = distance_from_start[current] + edges[neighbour]
+            if neighbour_distance < distance_from_start.get(neighbour, float('inf')):
+                distance_from_start[neighbour] = neighbour_distance
+                tentative_parents[neighbour] = current
+                nodes_to_visit.add(neighbour)
+
+    return _deconstruct_path(tentative_parents, end)
+
+
+def _deconstruct_path(tentative_parents, end):
+    if end not in tentative_parents:
+        return None
+    cursor = end
+    path = []
+    while cursor:
+        path.append(cursor)
+        cursor = tentative_parents.get(cursor)
+    return list(reversed(path))
+
+
+def merge_sort(m):
+    # base case
+    if len(m) <= 1:
+        return m
+
+    # splitting
+    half = len(m) // 2
+    left = m[:half]
+    right = m[half:]
+
+    # recursive step
+    left = merge_sort(left)
+    right = merge_sort(right)
+
+    # merging sorted
+    return merge(left, right)
+
+
+def merge(left, right):
+    result = []
+    while len(left) > 0 and len(right) > 0:
+        if left[0] <= right[0]:
+            result.append(left.pop(0))
+        else:
+            result.append(right.pop(0))
+
+    while len(left) > 0:
+        result.append(left.pop(0))
+    while len(right) > 0:
+        result.append(right.pop(0))
+
+    print(result)
+    return result
+
+
+def quick_sort(m):
+    quick_sort_helper(m, 0, len(m) - 1)
+    print(m)
+
+
+def quick_sort_helper(m, first, last):
+    if first < last:
+        p = partition(m, first, last)
+        print(p)
+        quick_sort_helper(m, first, p - 1)
+        quick_sort_helper(m, p + 1, last)
+
+
+def partition(m, first, last):
+    print('first: %d - last: %d' % (first, last))
+    pivot = m[last]
+    i = first - 1
+    for j in range(first, last):
+        if m[j] < pivot:
+            i += 1
+            temp = m[i]
+            m[i] = m[j]
+            m[j] = temp
+
+    if m[last] < m[i + 1]:
+        temp = m[i + 1]
+        m[i + 1] = m[last]
+        m[last] = temp
+
+    return i + 1
+
+
 def binomial_coefficient(n, k):
     return math.factorial(n) / (math.factorial(k) * math.factorial(n - k))
 
@@ -383,7 +505,7 @@ def process(arg):
             amicable_dict[i] = proper_divisors_sum(i)
         for key in amicable_dict.keys():
             if amicable_dict[key] in amicable_dict and key != amicable_dict[key] and \
-                            amicable_dict[amicable_dict[key]] == key:
+                    amicable_dict[amicable_dict[key]] == key:
                 result += key
         print(result)
     elif arg == '22':
@@ -462,7 +584,65 @@ def process(arg):
         raise ValueError('Not Implemented')
 
 
+def length_of_longest_substring(s):
+    """
+    :type s: str
+    :rtype: int
+    """
+    holder = ''
+    longest = ''
+    sub_start = 0
+    char_pos = 1
+    for c in s:
+        if c not in holder:
+            holder = s[sub_start:char_pos]
+        else:
+            if len(holder) > len(longest):
+                longest = holder
+            holder = c
+            sub_start += 1
+        char_pos += 1
+
+    return len(longest) if len(longest) > len(holder) else len(holder)
+
+
+def is_rotated(arr, rot):
+    # find start of arr in rot
+    # open iteration through rot through modulo
+    """
+        if len(arr) != len(rot):
+        return False
+
+    i = 0
+    j = 0
+    found_start = False
+    for e in rot:
+        if e == arr[0]:
+            found_start = True
+            j = i
+            for other_e in arr:
+                if rot[j % len(rot)] != other_e:
+                    found_start = False
+                    break
+                j += 1
+        if found_start:
+            break
+        i += 1
+
+    return found_start
+    """
+
+    new_arr = rot + rot
+    return any(arr == new_arr[offset:offset + len(arr)] for offset in range(len(new_arr)))
+
+
 def main():
+    print(is_rotated([1, 2, 3, 4], [3, 4, 1, 2]))
+    print(is_rotated([1, 2, 3, 4], [3, 5, 1, 2]))
+    print(is_rotated([1, 2, 3, 4, 1], [3, 4, 1, 1, 2]))
+    print(is_rotated([1, 2, 2, 2, 23, 4], [23, 4, 1, 2, 2, 2]))
+    print(length_of_longest_substring('dvdf'))
+    print(quick_sort([2, 5, 1, 43, 22, 50, 3, 4, 5]))
     # parse command line options
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'h', ['help'])
