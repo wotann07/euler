@@ -636,7 +636,46 @@ def is_rotated(arr, rot):
     return any(arr == new_arr[offset:offset + len(arr)] for offset in range(len(new_arr)))
 
 
+def cell_compete(states, days):
+    # WRITE YOUR CODE HERE
+    if len(states) < 1:
+        raise Exception('Empty array')
+    elif len(states) is 1:
+        return 0
+    else:
+        new_state = states[:]
+        for n in range(days):
+            new_state[0] = 0 ^ states[1]
+            new_state[len(new_state) - 1] = 0 ^ states[len(states) - 2]
+            for i in range(1, len(states) - 1):
+                new_state[i] = states[i - 1] ^ states[i + 1]
+            states = new_state[:]
+        return new_state
+
+
+def __find_gcd(a, b):
+    return b if a == 0 else __find_gcd(b % a, a)
+
+
+def __find_gcd_alt(a, b):
+    while b:
+        a, b = b, b % a
+    return a
+
+
+def generalized_gcd(num, arr):
+    # WRITE YOUR CODE HERE
+    # using Euclidean algorithm
+    gcd = arr[0]
+    for n in arr:
+        print gcd
+        gcd = __find_gcd(n, gcd)
+
+    return gcd
+
+
 def main():
+    print(cell_compete([1, 0, 1, 1, 0, 0, 1], 2))
     print(is_rotated([1, 2, 3, 4], [3, 4, 1, 2]))
     print(is_rotated([1, 2, 3, 4], [3, 5, 1, 2]))
     print(is_rotated([1, 2, 3, 4, 1], [3, 4, 1, 1, 2]))
